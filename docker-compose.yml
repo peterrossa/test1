@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  pg1:
+    container_name: "pg1"
+    image: "postgres:latest"
+    ports:
+      - "127.0.0.1:5001:5432"
+    environment:
+      PGDATA: "/var/lib/postgresql/data/pgdata1"
+      POSTGRES_PASSWORD: "somegreatpw"
+      CUSTOM_USER: "user1"
+      READER_USER: "reader"
+    volumes:
+      - ./_data:/var/lib/postgresql/data
+    # user: "root"
+  # pg2:
+  #   container_name: "pg2"
+  #   image: "postgres:latest"
+  #   ports:
+  #     - "127.0.0.1:5002:5432"
+  #   environment:
+  #     PGDATA: "/var/lib/postgresql/data/pgdata2"
+  #     POSTGRES_PASSWORD: "somegreatpw"
+  #     CUSTOM_USER: "user2"
+  #     READER_USER: "reader"
+  #   volumes:
+  #     - ./_data:/var/lib/postgresql/data
+  #   # user: "root"
+  # pg3:
+  #   container_name: "pg3"
+  #   image: "postgres:latest"
+  #   ports:
+  #     - "127.0.0.1:5003:5432"
+  #   environment:
+  #     PGDATA: "/var/lib/postgresql/data/pgdata3"
+  #     POSTGRES_PASSWORD: "somegreatpw"
+  #     CUSTOM_USER: "user3"
+  #     READER_USER: "reader"
+  #   volumes:
+  #     - ./_data:/var/lib/postgresql/data
+  #   # user: "root"
+  # pg4:
+  #   container_name: "pg4"
+  #   image: "postgres:latest"
+  #   ports:
+  #     - "127.0.0.1:5004:5432"
+  #   environment:
+  #     PGDATA: "/var/lib/postgresql/data/pgdata4"
+  #     POSTGRES_PASSWORD: "somegreatpw"
+  #     CUSTOM_USER: "user4"
+  #     READER_USER: "reader"
+  #   volumes:
+  #     - ./_data:/var/lib/postgresql/data
+  #   # user: "root"

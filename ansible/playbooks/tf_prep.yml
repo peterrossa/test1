@@ -1,0 +1,37 @@
+- hosts: localhost
+  tasks:
+    - debug:
+        msg: "---- TF prep - start"
+
+    - set_fact:
+        _pwd: "{{ playbook_dir }}"
+
+    # read `docker-compose.yml` && prep vars
+    - block:
+        - shell: "cat {{ _pwd }}/../docker-compose.yml"
+          register: _r
+
+        - set_fact:
+            _dc: "{{ _r.stdout | from_yaml }}"
+
+        - set_fact:
+            _dck: "{{ _dc.services.keys() }}"
+
+        # - debug:
+        #     msg: "{{ _dc }}"
+        #
+        # - debug:
+        #     msg: "{{ _dck }}"
+        #
+        # - debug:
+        #     msg: "{{ _dc.services[_dck[0]] }}"
+
+    # generate TF file
+    - block:
+        - set_fact:
+            _modcont: ""
+
+        - include_tasks: "{{ _pwd }}/tasks/modules_gen.yml"
+          loop: "{{ _dck }}"
+
+        - shell: "echo '{{ _modcont }}' > {{ _pwd }}/../terraform/db_gen.tf && chown {{ _cuid }}:{{ _cuid }} {{ _pwd }}/../terraform/db_gen.tf"

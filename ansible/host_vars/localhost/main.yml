@@ -1,0 +1,9 @@
+# NOTE - not used
+pg:
+    common:
+        pg_reader_user: reader
+        users:
+            - name: user1
+              access: full
+            - name: reader
+              access: read

@@ -1,0 +1,4 @@
+terraform/.terraform.lock.hcl
+_data
+_sql/db_*
+terraform/db_gen.tf

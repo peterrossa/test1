@@ -1,0 +1,48 @@
+# set `_initdb` var
+- block:
+    - ansible.builtin.stat:
+        path: "{{ _pwd }}/../_data/{{ _dc.services[item].environment.PGDATA | regex_replace('^.*/','') }}"
+      register: _s
+
+    - set_fact:
+        _initdb: 1
+      when: _s.stat.exists == False
+
+    - set_fact:
+        _initdb: 0
+      when: _s.stat.exists == True
+
+# generate pws
+- block:
+    - shell: "cat /dev/urandom | tr -dc \"a-zA-Z0-9@.^_\" | fold -w 24 | head -n 1"
+      register: _r
+
+    - shell: "cat /dev/urandom | tr -dc \"a-zA-Z0-9@.^_\" | fold -w 24 | head -n 1"
+      register: _r2
+
+    - set_fact:
+        _pw: "{{ _r.stdout }}"
+        _rpw: "{{ _r2.stdout }}"
+
+# generate SQL file with commands for this DB
+- block:
+    - shell: "cat {{ _pwd }}/../_sql/template.sql"
+      register: _r
+
+    - shell: "echo \"{{ _r.stdout
+                | replace('__USER__', _dc.services[item].environment.CUSTOM_USER)
+                | replace('__PW__', _pw)
+                | replace('__RUSER__', _dc.services[item].environment.READER_USER)
+                | replace('__RPW__', _rpw)
+                | replace('__DB__', item) }}\"
+                 > {{ _pwd }}/../_sql/db_{{ item }}.sql && chown {{ _cuid }}:{{ _cuid }} {{ _pwd }}/../_sql/db_{{ item }}.sql"
+
+# update modules code var
+- set_fact:
+    _modcont: "{{ _modcont }}module \"{{ item }}\" {\n
+\tsource = \"./modules/pgdb\"\n
+
+\tdcdata = {{ _dc.services[item] | to_json }}\n
+\tdckey = \"{{ item }}\"\n
+\tinit_db = {{ _initdb }}\n
+}\n\n"
